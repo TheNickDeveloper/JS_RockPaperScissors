@@ -1,5 +1,3 @@
-let userScore = 0;
-let computerScore = 0;
 const userScore_span = document.getElementById("user-score");
 const computerScore_span = document.getElementById("computer-score");
 const socreBoard_div = document.querySelector(".score-board");
@@ -8,30 +6,37 @@ const rock_div = document.getElementById("r");
 const paper_div = document.getElementById("p");
 const scissors_div = document.getElementById("s");
 
-main();
+let userScore = 0;
+let computerScore = 0;
+let _userChoice = null;
+let _computerChoice = null;
 
-function main(){
+initializeEvent();
+
+function initializeEvent(){
     rock_div.addEventListener('click', function() {
-        game('r');
+        _userChoice = 'r'
+        game();
     })
     
     paper_div.addEventListener('click', function() {
-        game('p');
-
+        _userChoice = 'p'
+        game();
     })
     
     scissors_div.addEventListener('click', function() {
-        game('s');
+        _userChoice = 's'
+        game();
     })
 }
 
-function game(userChoice){
-    const computerChoice = getComputerChoice();
-    switch (userChoice + computerChoice) {
+function game(){
+    _computerChoice = getComputerChoice();
+    switch (_userChoice + _computerChoice) {
         case 'sp':
         case 'pr':
         case 'rs':
-            win(userChoice, computerChoice);
+            win();
             break;
         case 'ss':
         case 'rr':
@@ -39,53 +44,45 @@ function game(userChoice){
             draw();
             break;
         default:
-            lose(userChoice, computerChoice)
+            lose()
             break;
     }
 }
 
 function getComputerChoice(){
-    const choices = ['r','p','s'];
-    const rndNum = Math.floor(Math.random()*3);
+    let choices = ['r','p','s'];
+    let rndNum = Math.floor(Math.random()*3);
     return choices[rndNum];
 }
 
-function win(userChoice, computerChoice){
+function win(){
     userScore++;
-    userScore_span.innerHTML = userScore;
-    computerScore_span.innerHTML = computerScore;
-    const smallUserWord = 'user'.fontsize(3).sub();
-    const smallCompWord = 'comp'.fontsize(3).sub();
-
-    result_div.innerHTML = `${convertToWord(userChoice)}${smallUserWord} 
-                                beats ${convertToWord(computerChoice)}${smallCompWord}. You Win!`;
-    document.getElementById(userChoice).classList.add('green-glow');
-    setTimeout(function(){document.getElementById(userChoice).classList.remove('green-glow')}, 1500);
+    UpdateIndication('green-glow', 'You Win!');
 }
 
-function lose(userChoice, computerChoice){
+function lose(){
     computerScore++;
-    userScore_span.innerHTML = userScore;
-    computerScore_span.innerHTML = computerScore;
-    const smallUserWord = 'user'.fontsize(3).sub();
-    const smallCompWord = 'comp'.fontsize(3).sub();
-
-    result_div.innerHTML = `${convertToWord(userChoice)}${smallUserWord} 
-                                loses ${convertToWord(computerChoice)}${smallCompWord}. You Lose...`;
-    document.getElementById(userChoice).classList.add('red-glow');
-    setTimeout(function(){document.getElementById(userChoice).classList.remove('red-glow')}, 1500);
+    UpdateIndication('red-glow', 'You Lose...');
 }
 
-function draw(userChoice, computerChoice){
+function draw(){
+    UpdateIndication('gray-glow', 'AGAIN~~');
+}
+
+function UpdateIndication(effect, result){
     userScore_span.innerHTML = userScore;
     computerScore_span.innerHTML = computerScore;
-    const smallUserWord = 'user'.fontsize(3).sub();
-    const smallCompWord = 'comp'.fontsize(3).sub();
 
-    result_div.innerHTML = `${convertToWord(userChoice)}${smallUserWord} 
-                                equals ${convertToWord(computerChoice)}${smallCompWord}. AGAIN~~`;
-    document.getElementById(userChoice).classList.add('gray-glow');
-    setTimeout(function(){document.getElementById(userChoice).classList.remove('gray-glow')}, 1500);
+    let smallUserWord = 'user'.fontsize(3).sub();
+    let smallCompWord = 'comp'.fontsize(3).sub();
+    let vs = 'v.s.'.fontsize(20).fontcolor('red');
+    
+    result_div.innerHTML = `${convertToWord(_userChoice)}${smallUserWord} 
+                            ${vs} ${convertToWord(_computerChoice)}${smallCompWord}. ${result}`;
+    
+    let userChoice_div = document.getElementById(_userChoice);
+    userChoice_div.classList.add(effect);
+    setTimeout(()=>userChoice_div.classList.remove(effect), 1500);
 }
 
 function convertToWord(letter){
